@@ -227,9 +227,18 @@ public class SerieController implements Serializable {
     }
 
     public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
+        return getSelectItems(ejbFacade.findAll(), true);
     }
-
+    
+    public static SelectItem[] getSelectItems(List<Serie> entities, boolean selectOne) {
+        SelectItem[] items = new SelectItem[entities.size()];
+        int i = 0;
+        for (Serie serie : entities) {
+            items[i++] = new SelectItem(serie, serie.getDenominacion());
+        }
+        return items;
+    }
+    
     public Serie getSerie(java.lang.Integer id) {
         return ejbFacade.find(id);
     }

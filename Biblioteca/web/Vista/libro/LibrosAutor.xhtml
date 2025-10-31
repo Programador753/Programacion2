@@ -53,8 +53,9 @@
                         <h:graphicImage library="iconos" name="trailer.png" rendered="#{libroController.tienePeli(libro)}" height="35"/>
                     </p:column>
                     <p:column headerText="Editar" style="text-align: center">
-                        <h:commandLink action="#{libroController.prepareEdit2}" value="#{bundle.ListLibroEditLink}">
-                        </h:commandLink>
+                        <p:commandLink action="#{libroController.prepareEdit3}" value="#{bundle.ListLibroEditLink}">
+                            <f:setPropertyActionListener target="#{libroController.current}" value="#{libro}" />
+                        </p:commandLink>
                     </p:column>
                 </p:dataTable>
                 <div class="card">

@@ -36,6 +36,14 @@ public class LibroController implements Serializable {
     private List<Libro> lista; // Lista de libros
     private DataModel<Libro> dataModelLibros;
 
+    public Libro getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Libro current) {
+        this.current = current;
+    }
+
     public List<Libro> getLista() {
         return lista;
     }
@@ -136,6 +144,11 @@ public class LibroController implements Serializable {
         Libro seleccionado = getDataModelLibros().getRowData();
         current = seleccionado;
         selectedItemIndex = lista.indexOf(seleccionado); // O usa paginación si aplica
+        return "Edit";
+    }
+
+    public String prepareEdit3() {
+        selectedItemIndex = lista.indexOf(current); // Usa paginación si aplica
         return "Edit";
     }
 
