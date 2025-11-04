@@ -35,18 +35,7 @@
                         <f:selectItems value="#{serieController.itemsAvailableSelectOne}"/>
                     </p:selectOneMenu>
                     <p:outputLabel value="Autores:" for="autores" />
-                    <p:selectCheckboxMenu id="autores"
-                                          value="#{libroController.selected.autorLibroList.nomAutor}"
-                                          label="Seleccionar autores"
-                                          multiple="true"
-                                          filter="true"
-                                          panelStyle="width:250px">
-                        <f:selectItems value="#{autorController.itemsAvailableSelectMany}"
-                                       var="autor"
-                                       itemLabel="#{autor.nomAutor}"
-                                       itemValue="#{autor}" />
-                    </p:selectCheckboxMenu>
-
+                    
                 </p:panelGrid>
                 <p:commandLink action="#{libroController.update}" value="#{bundle.EditLibroSaveLink}"/>
                 <br />

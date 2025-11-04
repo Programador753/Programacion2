@@ -8,6 +8,7 @@ package Repositorios;
 import Entidades.Autor;
 import Entidades.AutorPremio;
 import Entidades.Premio;
+import Entidades.Serie;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -43,6 +44,12 @@ public class AutorFacade extends AbstractFacade<Autor> {
         em = this.getEntityManager();
         Query q;
         q = em.createNamedQuery("AutorPremio.findByPremio").setParameter("elPremio", premio);
+        return q.getResultList();
+    }
+    public List<Autor> AutoresSerie(Serie serie){
+        em = this.getEntityManager();
+        Query q;
+        q = em.createNamedQuery("Autor.findBySerie").setParameter("serie", serie);
         return q.getResultList();
     }
 }

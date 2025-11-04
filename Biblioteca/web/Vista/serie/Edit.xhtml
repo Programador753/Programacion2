@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/template.xhtml">
         <ui:define name="title">
@@ -15,10 +16,17 @@
             </h:panelGroup>
             <h:form>
                 <h:panelGrid columns="2">
-                    <h:outputLabel value="#{bundle.EditSerieLabel_id}" for="id" />
-                    <h:inputText id="id" value="#{serieController.selected.id}" title="#{bundle.EditSerieTitle_id}" required="true" requiredMessage="#{bundle.EditSerieRequiredMessage_id}"/>
-                    <h:outputLabel value="#{bundle.EditSerieLabel_denominacion}" for="denominacion" />
-                    <h:inputText id="denominacion" value="#{serieController.selected.denominacion}" title="#{bundle.EditSerieTitle_denominacion}" required="true" requiredMessage="#{bundle.EditSerieRequiredMessage_denominacion}"/>
+                    <p:outputLabel value="Denominación:" for="denominacion" />
+                    <p:inputText id="denominacion" value="#{serieController.selected.denominacion}" title="#{bundle.EditSerieTitle_denominacion}" required="true" requiredMessage="#{bundle.EditSerieRequiredMessage_denominacion}"/>
+                    <p:outputLabel value="Autor:" for="autor" />
+                    <p:selectOneMenu id="autor" value="#{serieController.autorSeleccionado}" converter="autorConverter">
+                        <f:selectItems value="#{autorController.loadAutoresSerie(serieController.selected)}" var="autor" itemValue="#{autor}" itemLabel="#{autor.nomAutor} #{autor.apellido1} #{autor.apellido2}"/>
+                        <p:ajax listener="#{serieController.cargarLibrosAutor()}" update="libros" />
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Libros:" for="libros" />
+                    <p:selectManyMenu id="libros" value="#{serieController.selected.libroList}" converter="libroConverter">
+                        <f:selectItems value="#{serieController.librosDelAutor}" var="libro" itemValue="#{libro}" itemLabel="#{libro.nomLibro}" /> 
+                    </p:selectManyMenu>
                 </h:panelGrid>
                 <h:commandLink action="#{serieController.update}" value="#{bundle.EditSerieSaveLink}"/>
                 <br />

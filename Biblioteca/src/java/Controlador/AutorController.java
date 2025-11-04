@@ -7,6 +7,7 @@ import Entidades.AutorLibro;
 import Entidades.AutorPremio;
 import Entidades.Libro;
 import Entidades.Premio;
+import Entidades.Serie;
 import Repositorios.AutorFacade;
 
 import java.io.Serializable;
@@ -214,6 +215,7 @@ public class AutorController implements Serializable {
         return getSelectItems(ejbFacade.autoresOrdenados(), true);
     }
     
+    
     public SelectItem[] cargarAutorLibro(Libro libro) {
         return getSelectItemsCreacion(libro,ejbFacade.autoresOrdenados(), true);
     }
@@ -307,5 +309,8 @@ public class AutorController implements Serializable {
     }
     public void loadPremiosAutor(){
         this.setLista(ejbFacade.premioAutorOrdenado(premio));        
+    }
+    public List<Autor> loadAutoresSerie(Serie serie){
+        return ejbFacade.AutoresSerie(serie);        
     }
 }
