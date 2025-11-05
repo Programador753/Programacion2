@@ -129,32 +129,18 @@ public class SerieController implements Serializable {
     }
 
     public String prepareEdit() {
-        // 1. Cargas la Serie (tu código original, está perfecto)
         current = (Serie) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-
-        // 2. --- ¡NUEVA LÓGICA DE INICIALIZACIÓN! ---
         try {
-            // 3. Llama al método que nos mostraste, usando el facade:
             List<Autor> autoresParaSerie = autorFacade.AutoresSerie(current);
-
-            // 4. Si se encontraron autores (como dijiste, solo hay uno)
             if (autoresParaSerie != null && !autoresParaSerie.isEmpty()) {
-
-                // 5. Seleccionamos el primero (el único)
                 this.autorSeleccionado = autoresParaSerie.get(0);
-
-                // 6. ¡Llamamos al método para cargar los libros AHORA!
-                // Esto llenará la lista 'librosDelAutor'
                 cargarLibrosAutor();
-
             } else {
-                // Caso de seguridad: no se encontró autor
                 this.autorSeleccionado = null;
                 this.librosDelAutor = new ArrayList<>();
             }
         } catch (Exception e) {
-            // Manejar error si la carga de autores falla
             System.err.println("Error al pre-cargar el autor: " + e.getMessage());
             JsfUtil.addErrorMessage(e, "Error al cargar datos del autor");
             this.autorSeleccionado = null;
