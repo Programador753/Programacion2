@@ -36,7 +36,11 @@
                     </p:selectOneMenu>
                     <p:outputLabel value="Autores:" for="autores" />
                     <p:selectManyMenu id="autores" value="#{libroController.selected.autorLibroList}" converter="autorConverter">
-                        <f:selectItems value="" var="autor" itemValue="#{autor}" itemLabel="#{autor.nomAutor} #{autor.apellido1} #{autor.apellido2}" /> 
+                        <f:selectItems value="#{autorController.itemsAvailableSelectOne}"/>
+                    </p:selectManyMenu>
+                    <p:outputLabel value="Premios:" for="premios" />
+                    <p:selectManyMenu id="premios" value="#{libroController.selected.libroPremioList}">
+                        <f:selectItems value="#{premioController.itemsPorLibro}"/>
                     </p:selectManyMenu>
                 </p:panelGrid>
                 <p:commandLink action="#{libroController.update}" value="#{bundle.EditLibroSaveLink}"/>
