@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Premio.findById", query = "SELECT p FROM Premio p WHERE p.id = :id")
     , @NamedQuery(name = "Premio.findByTipoLibro", query = "SELECT p FROM Premio p WHERE p.tipo = 'L' ORDER BY p.nomPremio")
     , @NamedQuery(name = "Premio.findByTipoAutor", query = "SELECT p FROM Premio p WHERE p.tipo = 'A' ORDER BY p.nomPremio")
+    , @NamedQuery(name = "Premio.findByPaisTipoLibro", query = "SELECT p FROM Premio p WHERE p.tipo = 'L' AND p.paisId = :elPais")
     , @NamedQuery(name = "Premio.findByTipo", query = "SELECT p FROM Premio p WHERE p.tipo = :tipo")})
 public class Premio implements Serializable {
 

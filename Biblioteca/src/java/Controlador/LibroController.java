@@ -6,6 +6,7 @@ import Controlador.util.PaginationHelper;
 import Entidades.Autor;
 import Entidades.AutorLibro;
 import Entidades.LibroPremio;
+import Entidades.Premio;
 import Repositorios.LibroFacade;
 
 import java.io.Serializable;
@@ -309,5 +310,4 @@ public class LibroController implements Serializable {
         this.setLista(ejbFacade.libroAutorOrdenado(autor));
         this.dataModelLibros = new ListDataModel<>(lista); // Actualiza el DataModel
     }
-
 }

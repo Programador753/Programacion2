@@ -5,6 +5,7 @@ import Controlador.util.JsfUtil;
 import Controlador.util.PaginationHelper;
 import Entidades.Libro;
 import Entidades.LibroPremio;
+import Entidades.Pais;
 import Repositorios.PremioFacade;
 
 import java.io.Serializable;
@@ -31,7 +32,26 @@ public class PremioController implements Serializable {
     private Repositorios.PremioFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
+    private Pais pais;
+    private DataModel<Premio>dataModelPremio;
+    private List<Premio> premio;
 
+    public Pais getPais() {
+        return pais;
+    }
+
+    public void setPais(Pais pais) {
+        this.pais = pais;
+    }
+
+    public List<Premio> getPremio() {
+        return premio;
+    }
+
+    public void setPremio(List<Premio> premio) {
+        this.premio = premio;
+    }
+    
     public PremioController() {
     }
 
@@ -202,7 +222,7 @@ public class PremioController implements Serializable {
     public SelectItem[] getItemsPorAutor() {
         return getSelectItems(ejbFacade.premiosAutor(), true);
     }
-    
+        
     public Premio getPremio(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
@@ -268,5 +288,10 @@ public class PremioController implements Serializable {
             items[i++] = new SelectItem(libPremio, premio.getNomPremio());
         }
         return items;
+    }
+    
+        public void loadPremioPais() {
+        this.setPremio(ejbFacade.premiosPaisLibro(pais));
+        this.dataModelPremio = new ListDataModel<>(premio); // Actualiza el DataModel
     }
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListLibroTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form>
+                <p:toolbar style="margin-bottom: 10; width: 69%; float: left">
+                    <f:facet name="left" >
+                        <p:selectOneMenu id="unPais" value="#{premioController.pais}"  onchange="#{premioController.loadPremioPais()} submit()">
+                            <f:selectItems value="#{paisController.itemsAvailableSelectOne}"/> 
+                        </p:selectOneMenu>
+                    </f:facet>
+                </p:toolbar>
+            </h:form>
+            <h:form>
+                <p:toolbar style="margin-bottom: 10; width: 69%; float: left">
+                    <f:facet name="left" >
+                        <p:selectOneMenu id="unPremio" value="#{premioController.premio}" >
+                            <f:selectItems value="#{premioController.premio}" var="premio" itemLabel="#{premio.nomPremio}"/> 
+                        </p:selectOneMenu>
+                    </f:facet>
+                </p:toolbar>
+            </h:form>
+            <h:form styleClass="jsfcrud_list_form">
+                <p:dataTable value="#{libroController.lista}" var="libro" style="width: 70%; float: left; margin-bottom: 40">
+                    <p:column headerText="Titulo" sortBy="#{libro.nomLibro}" width="250px">
+                        <h:outputText value="#{libro.nomLibro} "/>
+                    </p:column>
+                    <p:column headerText="Año" width="75" sortBy="#{libro.ano}">
+                        <h:outputText value="#{libro.ano}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Portada" width="250">
+                        <p:commandLink title="#{libro.nomLibro}" onclick="PF('dlg#{libro.id}').show(); return false;">
+                            <h:graphicImage library="portadas" name="#{libro.portada}" height="60"/>
+                        </p:commandLink>
+                        <p:dialog widgetVar="dlg#{libro.id}" header="#{libro.nomLibro}" modal="true" resizable="false" closable="true">
+                            <h:graphicImage library="portadas" name="#{libro.portada}" width="400"/>
+                        </p:dialog>
+                    </p:column>
+                    <p:column headerText="Sus Premios" width="250">
+                        <h:selectManyListbox id="susPremios" style="width:250px; border: none; overflow-y: scroll; background: none;" size="3" disabled="true">
+                            <f:selectItems value="#{libro.libroPremioList}" var="libroPremio" itemLabel="#{libroPremio.premioId.nomPremio}"/> 
+                        </h:selectManyListbox>
+                    </p:column>
+                    <p:column headerText="Serie" style="text-align: center" sortBy="#{libro.serieId.denominacion}">
+                        <h:outputText value="#{libro.serieId.denominacion} - #{libro.indiceSerie}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Pélicula" style="text-align: center">
+                        <h:graphicImage library="iconos" name="trailer.png" rendered="#{libroController.tienePeli(libro)}" height="35"/>
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink action="#{libroController.prepareEdit3}" value="#{bundle.ListLibroEditLink}">
+                            <f:setPropertyActionListener target="#{libroController.current}" value="#{libro}" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+                <div class="card">
+                    <p:galleria value="#{libroController.lista}" var="libro" style="float: right; margin-right: 70px; max-width: 450px" circular="true" autoPlay="true" transitionInterval="2000">
+                        <p:graphicImage library="portadas" name="#{libro.portada}" style="width: 100%" />
+                        <f:facet name="thumbnail">
+                            <p:graphicImage library="portadas" name="#{libro.portada}" style="width: 100px" />
+                        </f:facet>
+                    </p:galleria>
+                </div>
+                <br />
+                <h:commandLink action="#{libroController.prepareCreate}" value="#{bundle.ListLibroCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListLibroIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
