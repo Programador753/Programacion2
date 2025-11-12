@@ -10,6 +10,7 @@ import Entidades.Premio;
 import Repositorios.LibroFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
@@ -309,5 +310,27 @@ public class LibroController implements Serializable {
     public void loadLibrosAutor() {
         this.setLista(ejbFacade.libroAutorOrdenado(autor));
         this.dataModelLibros = new ListDataModel<>(lista); // Actualiza el DataModel
+    }
+    
+    public void loadLibrosPremio() {
+        // 2a. Obtener el 'PremioController' manualmente desde el FacesContext
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        PremioController premioController = (PremioController) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "premioController");
+
+        // 2b. Obtener el premio seleccionado de ESE controlador
+        Premio premioSeleccionado = null;
+        if (premioController != null) {
+            premioSeleccionado = premioController.getPremio();
+        }
+
+        // 2c. Usar el premio (que ahora sí tiene valor) para buscar los libros
+        if (premioSeleccionado != null) {
+            this.setLista(ejbFacade.libroPremioOrdenado(premioSeleccionado));
+        } else {
+            // Si no hay premio, limpiar la lista.
+            // Usamos el nombre completo de la clase porque no podemos añadir imports.
+            this.setLista(new ArrayList<Libro>());
+        }
     }
 }

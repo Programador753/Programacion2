@@ -9,6 +9,7 @@ import Entidades.Pais;
 import Repositorios.PremioFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
@@ -34,7 +35,28 @@ public class PremioController implements Serializable {
     private int selectedItemIndex;
     private Pais pais;
     private DataModel<Premio>dataModelPremio;
-    private List<Premio> premio;
+    
+    private List<Premio> listaPremiosDisponibles;
+    private Premio premio;
+
+    public List<Premio> getListaPremiosDisponibles() {
+        if (listaPremiosDisponibles == null) {
+            listaPremiosDisponibles = new ArrayList<Premio>();
+        }
+        return listaPremiosDisponibles;
+    }
+
+    public void setListaPremiosDisponibles(List<Premio> lista) {
+        this.listaPremiosDisponibles = lista;
+    }
+
+    public Premio getPremio() {
+        return premio;
+    }
+
+    public void setPremio(Premio premio) {
+        this.premio = premio;
+    }
 
     public Pais getPais() {
         return pais;
@@ -44,14 +66,6 @@ public class PremioController implements Serializable {
         this.pais = pais;
     }
 
-    public List<Premio> getPremio() {
-        return premio;
-    }
-
-    public void setPremio(List<Premio> premio) {
-        this.premio = premio;
-    }
-    
     public PremioController() {
     }
 
@@ -291,7 +305,17 @@ public class PremioController implements Serializable {
     }
     
         public void loadPremioPais() {
-        this.setPremio(ejbFacade.premiosPaisLibro(pais));
-        this.dataModelPremio = new ListDataModel<>(premio); // Actualiza el DataModel
-    }
+        if (pais != null) {
+            // 3a. Carga la LISTA de premios disponibles
+            this.setListaPremiosDisponibles(ejbFacade.premiosPaisLibro(pais));
+        } else {
+            // 3b. Si no hay país, limpia la LISTA
+            this.setListaPremiosDisponibles(new java.util.ArrayList<Premio>());
+        }
+        
+        // 3c. Resetea el PREMIO SELECCIONADO (muy importante)
+        this.setPremio(null);
+        
+        // 3d. Esta línea ya no es necesaria
+        }
 }

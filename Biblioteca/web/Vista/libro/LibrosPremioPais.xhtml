@@ -11,26 +11,29 @@
             <h:outputText value="#{bundle.ListLibroTitle}"></h:outputText>
         </ui:define>
         <ui:define name="body">
-            <h:form>
+            
+            <h:form id="mainForm" styleClass="jsfcrud_list_form">
+                
                 <p:toolbar style="margin-bottom: 10; width: 69%; float: left">
                     <f:facet name="left" >
-                        <p:selectOneMenu id="unPais" value="#{premioController.pais}"  onchange="#{premioController.loadPremioPais()} submit()">
-                            <f:selectItems value="#{paisController.itemsAvailableSelectOne}"/> 
+                        <p:selectOneMenu id="unPais" value="#{premioController.pais}" converter="paisConverter">
+                            <f:selectItems value="#{paisController.itemsAvailableSelectOne}"/>
+                            <p:ajax listener="#{premioController.loadPremioPais()}" update="unPremio"/>
                         </p:selectOneMenu>
                     </f:facet>
                 </p:toolbar>
-            </h:form>
-            <h:form>
+                
                 <p:toolbar style="margin-bottom: 10; width: 69%; float: left">
                     <f:facet name="left" >
-                        <p:selectOneMenu id="unPremio" value="#{premioController.premio}" >
-                            <f:selectItems value="#{premioController.premio}" var="premio" itemLabel="#{premio.nomPremio}"/> 
+                        <p:selectOneMenu id="unPremio" value="#{premioController.premio}">
+                            <f:selectItems value="#{premioController.listaPremiosDisponibles}" var="p" itemLabel="#{p.nomPremio}" />
+                            
+                            <p:ajax listener="#{libroController.loadLibrosPremio()}" update="libros bookGalleria"/>
                         </p:selectOneMenu>
                     </f:facet>
                 </p:toolbar>
-            </h:form>
-            <h:form styleClass="jsfcrud_list_form">
-                <p:dataTable value="#{libroController.lista}" var="libro" style="width: 70%; float: left; margin-bottom: 40">
+
+                <p:dataTable id="libros" value="#{libroController.lista}" var="libro" style="width: 70%; float: left; margin-bottom: 40" >
                     <p:column headerText="Titulo" sortBy="#{libro.nomLibro}" width="250px">
                         <h:outputText value="#{libro.nomLibro} "/>
                     </p:column>
@@ -64,21 +67,23 @@
                         </p:commandLink>
                     </p:column>
                 </p:dataTable>
+                
                 <div class="card">
-                    <p:galleria value="#{libroController.lista}" var="libro" style="float: right; margin-right: 70px; max-width: 450px" circular="true" autoPlay="true" transitionInterval="2000">
+                    <p:galleria id="bookGalleria" value="#{libroController.lista}" var="libro" style="float: right; margin-right: 70px; max-width: 450px" circular="true" autoPlay="true" transitionInterval="2000">
                         <p:graphicImage library="portadas" name="#{libro.portada}" style="width: 100%" />
                         <f:facet name="thumbnail">
                             <p:graphicImage library="portadas" name="#{libro.portada}" style="width: 100px" />
                         </f:facet>
                     </p:galleria>
                 </div>
+                
                 <br />
                 <h:commandLink action="#{libroController.prepareCreate}" value="#{bundle.ListLibroCreateLink}"/>
                 <br />
                 <br />
                 <h:link outcome="/index" value="#{bundle.ListLibroIndexLink}"/>
-            </h:form>
-        </ui:define>
+                
+            </h:form> </ui:define>
     </ui:composition>
 
 </html>
