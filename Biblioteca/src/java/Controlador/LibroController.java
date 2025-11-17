@@ -23,11 +23,14 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 
 @Named("libroController")
 @SessionScoped
 public class LibroController implements Serializable {
 
+    @Inject
+    private PremioController premioController;
     private Libro current;
     private DataModel items = null;
     @EJB
@@ -313,23 +316,14 @@ public class LibroController implements Serializable {
     }
     
     public void loadLibrosPremio() {
-        // 2a. Obtener el 'PremioController' manualmente desde el FacesContext
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        PremioController premioController = (PremioController) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "premioController");
+        // 1.Obtenemos el premio directamente del controlador inyectado
+        Premio premioSeleccionado = premioController.getPremio();
 
-        // 2b. Obtener el premio seleccionado de ESE controlador
-        Premio premioSeleccionado = null;
-        if (premioController != null) {
-            premioSeleccionado = premioController.getPremio();
-        }
-
-        // 2c. Usar el premio (que ahora sí tiene valor) para buscar los libros
+        // 2.Usar el premio para buscar los libros (lógica sin cambios)
         if (premioSeleccionado != null) {
             this.setLista(ejbFacade.libroPremioOrdenado(premioSeleccionado));
         } else {
             // Si no hay premio, limpiar la lista.
-            // Usamos el nombre completo de la clase porque no podemos añadir imports.
             this.setLista(new ArrayList<Libro>());
         }
     }
