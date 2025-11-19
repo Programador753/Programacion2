@@ -9,6 +9,8 @@ import Entidades.Autor;
 import Entidades.AutorPremio;
 import Entidades.Premio;
 import Entidades.Serie;
+import Entidades.ValoresGrafica;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -51,5 +53,17 @@ public class AutorFacade extends AbstractFacade<Autor> {
         Query q;
         q = em.createNamedQuery("Autor.findBySerie").setParameter("serie", serie);
         return q.getResultList();
+    }
+    public List<ValoresGrafica> ValoresParaGrafica(){
+        em = this.getEntityManager();
+        Query q;
+        q = em.createNamedQuery("Autor.graficaPorPais");
+        List<Object[]> resultados = q.getResultList();
+        List<ValoresGrafica> lista = new ArrayList<>();
+        for(Object[] fila : resultados){
+            ValoresGrafica vg = new ValoresGrafica((String)fila[0], (Long)fila[1]);
+            lista.add(vg);
+        }
+        return lista;
     }
 }

@@ -8,9 +8,11 @@ import Entidades.AutorPremio;
 import Entidades.Libro;
 import Entidades.Premio;
 import Entidades.Serie;
+import Entidades.ValoresGrafica;
 import Repositorios.AutorFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,11 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import org.primefaces.model.charts.ChartData;
+import org.primefaces.model.charts.bar.BarChartDataSet;
+import org.primefaces.model.charts.bar.BarChartModel;
+import org.primefaces.model.charts.pie.PieChartDataSet;
+import org.primefaces.model.charts.pie.PieChartModel;
 
 @Named("autorController")
 @SessionScoped
@@ -38,6 +45,16 @@ public class AutorController implements Serializable {
     private int selectedItemIndex;
     private Premio premio;
     private List<AutorPremio> lista; // Lista de autores
+    private PieChartModel pieModel;
+
+    public PieChartModel getPieModel() {
+        this.createPieModel();
+        return pieModel;
+    }
+
+    public void setPieModel(PieChartModel pieModel) {
+        this.pieModel = pieModel;
+    }
 
     public Premio getPremio() {
         return premio;
@@ -55,7 +72,6 @@ public class AutorController implements Serializable {
         this.lista = lista;
     }
 
-    
     public AutorController() {
     }
 
@@ -214,17 +230,16 @@ public class AutorController implements Serializable {
     public SelectItem[] getItemsAvailableSelectOne() {
         return getSelectItems(ejbFacade.autoresOrdenados(), true);
     }
-    
-    
+
     public SelectItem[] cargarAutorLibro(Libro libro) {
-        return getSelectItemsCreacion(libro,ejbFacade.autoresOrdenados(), true);
+        return getSelectItemsCreacion(libro, ejbFacade.autoresOrdenados(), true);
     }
 
     public Autor getAutor(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = Autor.class, value="autorConverter")
+    @FacesConverter(forClass = Autor.class, value = "autorConverter")
     public static class AutorControllerConverter implements Converter {
 
         @Override
@@ -282,7 +297,7 @@ public class AutorController implements Serializable {
             autLib.setAutorId(autor);
             autLib.setLibroId(libro);
             autLib.setId(i);
-            items[i++] = new SelectItem(autLib,(autor.getNomAutor() + " " + autor.getApellido1() + " " + autor.getApellido2()));
+            items[i++] = new SelectItem(autLib, (autor.getNomAutor() + " " + autor.getApellido1() + " " + autor.getApellido2()));
         }
         return items;
     }
@@ -307,10 +322,92 @@ public class AutorController implements Serializable {
             return "none";
         }
     }
-    public void loadPremiosAutor(){
-        this.setLista(ejbFacade.premioAutorOrdenado(premio));        
+
+    public void loadPremiosAutor() {
+        this.setLista(ejbFacade.premioAutorOrdenado(premio));
     }
-    public List<Autor> loadAutoresSerie(Serie serie){
-        return ejbFacade.AutoresSerie(serie);        
+
+    public List<Autor> loadAutoresSerie(Serie serie) {
+        return ejbFacade.AutoresSerie(serie);
+    }
+
+    private void createPieModel() {
+        List<ValoresGrafica> listaGrafico = this.ejbFacade.ValoresParaGrafica();
+        pieModel = new PieChartModel();
+        ChartData data = new ChartData();
+
+        // Cargamos los nombres de los países
+        List<String> labels = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            labels.add(listaGrafico.get(i).getNomPais());
+        }
+        data.setLabels(labels);
+
+        // Cargamos el dataset con los datos
+        PieChartDataSet dataSet = new PieChartDataSet();
+        List<Number> values = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            values.add(listaGrafico.get(i).getNumAutores());
+        }
+        dataSet.setData(values);
+
+        // Cargamos los colores
+        String[] colores = {"pink", "blue", "orange", "yellow", "red", "green"};
+        List<String> bgColors = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            bgColors.add(colores[i]);
+        }
+        dataSet.setBackgroundColor(bgColors);
+
+        data.addChartDataSet(dataSet);
+        pieModel.setData(data);
+    }
+
+    // Asegúrate de tener la variable declarada en la clase
+    private BarChartModel barModel;
+
+    // Añade este método (es la adaptación de tu createPieModel)
+    public void createBarModel() {
+        // Reutilizamos la misma consulta a la base de datos
+        List<ValoresGrafica> listaGrafico = this.ejbFacade.ValoresParaGrafica();
+
+        // AQUI EL CAMBIO PRINCIPAL: Instanciamos BarChartModel
+        barModel = new BarChartModel();
+        ChartData data = new ChartData();
+
+        // EJE X: Cargamos los nombres de los países (Igual que en el Pie)
+        List<String> labels = new ArrayList<>();
+        // Nota: Asegúrate que listaGrafico tenga al menos 6 elementos para evitar error
+        int limite = Math.min(listaGrafico.size(), 6);
+
+        for (int i = 0; i < limite; i++) {
+            labels.add(listaGrafico.get(i).getNomPais());
+        }
+        data.setLabels(labels);
+
+        // DATASET: Usamos BarChartDataSet en vez de PieChartDataSet
+        BarChartDataSet dataSet = new BarChartDataSet();
+        dataSet.setLabel("Cantidad de Autores"); // Etiqueta de la leyenda
+
+        List<Number> values = new ArrayList<>();
+        for (int i = 0; i < limite; i++) {
+            values.add(listaGrafico.get(i).getNumAutores());
+        }
+        dataSet.setData(values);
+
+        
+        dataSet.setBackgroundColor("yellow");
+
+        // Opcional: Añadir borde a las barras para que se vean mejor
+        dataSet.setBorderWidth(1);
+
+        data.addChartDataSet(dataSet);
+        barModel.setData(data);
+    }
+
+    // El Getter necesario para el XHTML
+    public BarChartModel getBarModel() {
+        this.createBarModel();
+        return barModel;
     }
 }

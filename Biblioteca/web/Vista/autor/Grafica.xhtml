@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    
+    <h:head>
+        <h:outputScript library="primefaces" name="chart/chart.min.js" target="head" />
+    </h:head>
+    <div class="grid" style="width: 500px">
+        <div class="col-12 lg:col-6 xl:col-4">
+            <div class="card">
+                <p:pieChart model="#{autorController.pieModel}"/>
+            </div>
+            <div class="card">
+                <p:barChart model="#{autorController.barModel}"/>
+            </div>
+        </div>
+    </div>
+</html>

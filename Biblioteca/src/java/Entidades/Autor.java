@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Autor.findByFNac", query = "SELECT a FROM Autor a WHERE a.fNac = :fNac")
     , @NamedQuery(name = "Autor.findByFDef", query = "SELECT a FROM Autor a WHERE a.fDef = :fDef")
     , @NamedQuery(name = "Autor.findByFoto", query = "SELECT a FROM Autor a WHERE a.foto = :foto")
+    , @NamedQuery(name = "Autor.graficaPorPais", query = "SELECT p.nomPais, count(a.id) as cuantos FROM Autor a INNER JOIN Pais p ON (a.paisId = p) GROUP BY a.paisId ORDER BY cuantos DESC")
     , @NamedQuery(name = "Autor.findByLocalidad", query = "SELECT a FROM Autor a WHERE a.localidad = :localidad")})
 public class Autor implements Serializable {
 
