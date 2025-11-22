@@ -10,69 +10,100 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.ListAutorTitle}"></h:outputText>
         </ui:define>
+
         <ui:define name="body">
-            <h:form styleClass="jsfcrud_list_form">
+            
+            <style>
+                /* Reseteamos margenes del body por si acaso */
+                html, body {
+                    height: 100%;
+                    margin: 0;
+                }
+
+                /* Forzamos la posición del dock al final de la ventana VISIBLE */
+                body .ui-dock-bottom {
+                    position: fixed !important;
+                    bottom: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    z-index: 99999 !important; /* Z-index altísimo para que flote sobre todo */
+                    margin-bottom: 0 !important;
+                    pointer-events: none; /* Truco: permite hacer clic a través del área vacía del dock */
+                }
+
+                /* Reactivamos los clics solo en los iconos del dock */
+                body .ui-dock-bottom .ui-dock-item {
+                    pointer-events: auto;
+                }
+            </style>
+
+            <h:form styleClass="jsfcrud_list_form" id="AutorListForm">
                 <p:dataTable value="#{autorController.items}" var="autor" rows="10" style="border:solid 1px"
-                     paginator="true" paginatorPosition="both"
-                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
-                     rowsPerPageTemplate="5,10,{ShowAll|'All'}">
-                        <p:column headerText="Nombre" sortBy="#{autor.apellido1}" width="250px">
-                            <h:outputText value="#{autor.apellido1} #{autor.apellido2}, #{autor.nomAutor} "/>
-                        </p:column>
-                        <p:column headerText="F. Nac" width="75" sortBy="#{autor.FNac}">
-                            <h:outputText value="#{autor.FNac}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="F. Def" width="75" sortBy="#{autor.FDef}">
-                            <h:outputText value="#{autor.FDef}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Edad" sortBy="#{autor.FNac}" width="75">
-                            <h:outputText value="#{autorController.calcularEdad(autor.FNac)}" style="display:#{autorController.mostrarEdad(autor)}"/>   
-                        </p:column>
-                        <p:column headerText="Sus Libros" width="250">
-                            <h:selectManyListbox id="susLibros" style="width:250px; border: none; overflow-y: scroll; background: none;" size="3" disabled="true">
-                                <f:selectItems value="#{libroController.cargarLibrosAutor(autor)}" var="libro" itemValue="#{libro.id}" itemLabel="#{libro.ano} - #{libro.nomLibro}"/>
-                            </h:selectManyListbox>
-                        </p:column>
-                        <p:column headerText="Sus Premios" width="250">
-                            <h:selectManyListbox id="susPremios" style="width:250px; border: none; overflow-y: scroll; background: none;" size="3" disabled="true">
-                                <f:selectItems value="#{autor.autorPremioList}" var="autorPremio" itemLabel="#{autorPremio.anio} - #{autorPremio.premioId.nomPremio}"/> 
-                            </h:selectManyListbox>
-                        </p:column>
-                        <p:column headerText="Foto">
+                             paginator="true" paginatorPosition="both"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="5,10,{ShowAll|'All'}">
+                    
+                    <p:column headerText="Nombre" sortBy="#{autor.apellido1}" width="250px">
+                        <h:outputText value="#{autor.apellido1} #{autor.apellido2}, #{autor.nomAutor} "/>
+                    </p:column>
+                    <p:column headerText="F. Nac" width="75" sortBy="#{autor.FNac}">
+                        <h:outputText value="#{autor.FNac}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="F. Def" width="75" sortBy="#{autor.FDef}">
+                        <h:outputText value="#{autor.FDef}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Edad" sortBy="#{autor.FNac}" width="75">
+                        <h:outputText value="#{autorController.calcularEdad(autor.FNac)}" style="display:#{autorController.mostrarEdad(autor)}"/>   
+                    </p:column>
+                    <p:column headerText="Sus Libros" width="250">
+                        <h:selectManyListbox id="susLibros" style="width:250px; border: none; overflow-y: scroll; background: none;" size="3" disabled="true">
+                            <f:selectItems value="#{libroController.cargarLibrosAutor(autor)}" var="libro" itemValue="#{libro.id}" itemLabel="#{libro.ano} - #{libro.nomLibro}"/>
+                        </h:selectManyListbox>
+                    </p:column>
+                    <p:column headerText="Sus Premios" width="250">
+                        <h:selectManyListbox id="susPremios" style="width:250px; border: none; overflow-y: scroll; background: none;" size="3" disabled="true">
+                            <f:selectItems value="#{autor.autorPremioList}" var="autorPremio" itemLabel="#{autorPremio.anio} - #{autorPremio.premioId.nomPremio}"/> 
+                        </h:selectManyListbox>
+                    </p:column>
+                    <p:column headerText="Foto">
                         <p:commandLink title="#{autor.nomAutor}" onclick="PF('dlg#{autor.id}').show(); return false;">
                             <h:graphicImage library="imagenes" name="#{autor.foto}" height="45"/>
                         </p:commandLink>
                         <p:dialog widgetVar="dlg#{autor.id}" header="#{autor.nomAutor}" modal="true" resizable="false" closable="true">
                             <h:graphicImage library="imagenes" name="#{autor.foto}" width="400"/>
                         </p:dialog>
-                        </p:column>
-                        <p:column headerText="País">
-                            <h:graphicImage library="banderas" name="#{autor.paisId.bandera}" height="45"/>
-                            <br><h:outputText value="#{autor.paisId.nomPais}"/></br>
-                        </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="&nbsp;"/>
-                            </f:facet>
-                            <h:commandLink action="#{autorController.prepareView}" value="#{bundle.ListAutorViewLink}"/>
-                            <h:outputText value=" "/>
-                            <h:commandLink action="#{autorController.prepareEdit}" value="#{bundle.ListAutorEditLink}"/>
-                            <h:outputText value=" "/>
-                            <h:commandLink action="#{autorController.destroy}" value="#{bundle.ListAutorDestroyLink}"/>
-                        </p:column>
-                    </p:dataTable>
-                <br />
-                <h:commandLink action="#{autorController.prepareCreate}" value="#{bundle.ListAutorCreateLink}"/>
-                <br />
-                <br />
-                <h:link outcome="/index" value="#{bundle.ListAutorIndexLink}"/>
+                    </p:column>
+                    <p:column headerText="País">
+                        <h:graphicImage library="banderas" name="#{autor.paisId.bandera}" height="45"/>
+                        <br><h:outputText value="#{autor.paisId.nomPais}"/></br>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="&nbsp;"/>
+                        </f:facet>
+                        <h:commandLink action="#{autorController.prepareView}" value="#{bundle.ListAutorViewLink}" />
+                        <h:outputText value=" "/>
+                        <h:commandLink action="#{autorController.prepareEdit}" value="#{bundle.ListAutorEditLink}"/>
+                        <h:outputText value=" "/>
+                        <h:commandLink action="#{autorController.destroy}" value="#{bundle.ListAutorDestroyLink}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <div style="height: 200px; width: 100%; display: block; clear: both;"></div>
             </h:form>
+
+            <h:form id="DockForm">
+                <p:dock position="bottom">
+                    <p:menuitem value="#{bundle.ListAutorIndexLink}" icon="/resources/iconos/home.ico" outcome="/index"/>
+                    <p:menuitem value="#{bundle.ListAutorCreateLink}" icon="/resources/iconos/listado.png" action="#{autorController.prepareCreate}"/>
+                </p:dock>
+            </h:form>
+
         </ui:define>
     </ui:composition>
-
 </html>

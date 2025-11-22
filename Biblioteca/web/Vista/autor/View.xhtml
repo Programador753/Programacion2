@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/template.xhtml">
         <ui:define name="title">
@@ -13,45 +14,140 @@
             <h:panelGroup id="messagePanel" layout="block">
                 <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
             </h:panelGroup>
+
             <h:form>
-                <h:panelGrid columns="2">
-                    <h:outputText value="#{bundle.ViewAutorLabel_id}"/>
-                    <h:outputText value="#{autorController.selected.id}" title="#{bundle.ViewAutorTitle_id}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_nomAutor}"/>
-                    <h:outputText value="#{autorController.selected.nomAutor}" title="#{bundle.ViewAutorTitle_nomAutor}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_apellido1}"/>
-                    <h:outputText value="#{autorController.selected.apellido1}" title="#{bundle.ViewAutorTitle_apellido1}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_apellido2}"/>
-                    <h:outputText value="#{autorController.selected.apellido2}" title="#{bundle.ViewAutorTitle_apellido2}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_FNac}"/>
-                    <h:outputText value="#{autorController.selected.FNac}" title="#{bundle.ViewAutorTitle_FNac}">
-                        <f:convertDateTime pattern="MM/dd/yyyy" />
-                    </h:outputText>
-                    <h:outputText value="#{bundle.ViewAutorLabel_FDef}"/>
-                    <h:outputText value="#{autorController.selected.FDef}" title="#{bundle.ViewAutorTitle_FDef}">
-                        <f:convertDateTime pattern="MM/dd/yyyy" />
-                    </h:outputText>
-                    <h:outputText value="#{bundle.ViewAutorLabel_foto}"/>
-                    <h:outputText value="#{autorController.selected.foto}" title="#{bundle.ViewAutorTitle_foto}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_localidad}"/>
-                    <h:outputText value="#{autorController.selected.localidad}" title="#{bundle.ViewAutorTitle_localidad}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_biografia}"/>
-                    <h:outputText value="#{autorController.selected.biografia}" title="#{bundle.ViewAutorTitle_biografia}"/>
-                    <h:outputText value="#{bundle.ViewAutorLabel_paisId}"/>
-                    <h:outputText value="#{autorController.selected.paisId}" title="#{bundle.ViewAutorTitle_paisId}"/>
-                </h:panelGrid>
+                <style>
+                    .premios-list .ui-datalist-content {
+                        border: none !important;
+                        background: none !important;
+                    }
+                    .premio-item {
+                        padding: 5px 0;
+                        border-bottom: 1px solid #f0f0f0;
+                        font-size: 14px;
+                    }
+                    .trofeo-icon {
+                        color: #DAA520; /* Color Dorado */
+                        margin-right: 8px;
+                        font-size: 1.2em;
+                    }
+                    .anio-premio {
+                        font-weight: bold;
+                        color: #555;
+                        margin-right: 5px;
+                    }
+                </style>
+
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+                    <p:column>
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <p:commandLink title="#{autorController.selected.nomAutor}">
+                                <h:graphicImage library="imagenes" name="#{autorController.selected.foto}" 
+                                                style="max-height: 300px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+                            </p:commandLink>
+                            <br/><br/>
+                            <h:outputText value="#{autorController.selected.nomAutor} #{autorController.selected.apellido1} #{autorController.selected.apellido2}" 
+                                          style="font-weight: bold; font-size: 1.5em; color: #333;"/>
+                        </div>
+
+                        <div style="text-align: center; color: #666; margin-bottom: 20px;">
+                            <i class="pi pi-calendar"></i> 
+                            <h:outputText value="#{autorController.selected.FNac}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+
+                            <h:panelGroup rendered="#{autorController.selected.FDef == null}">
+                                <span style="font-weight: bold; color: #28a745;"> (#{autorController.calcularEdad(autorController.selected.FNac)} años)</span>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{autorController.selected.FDef != null}">
+                                <h:outputText value=" — " />
+                                <h:outputText value="#{autorController.selected.FDef}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                                <span style="font-style: italic;"> (Fallecido)</span>
+                            </h:panelGroup>
+                        </div>
+
+                        <p:fieldset legend="Premios y Distinciones" style="margin-top: 10px;">
+                            <p:dataList value="#{autorController.selected.autorPremioList}" var="autorPremio" 
+                                        type="none" styleClass="premios-list" emptyMessage="No hay premios registrados.">
+
+                                <div class="premio-item">
+                                    <i class="pi pi-trophy trofeo-icon"></i>
+                                    <span class="anio-premio">#{autorPremio.anio}</span>
+                                    <h:outputText value="#{autorPremio.premioId.nomPremio}" />
+                                </div>
+
+                            </p:dataList>
+                        </p:fieldset>
+
+                    </p:column>
+
+                    <p:column>
+                        <p:fieldset legend="Bibliografía Detallada" style="height: 100%; padding: 0;">
+
+                            <p:dataTable value="#{libroController.cargarLibrosAutor(autorController.selected)}" 
+                                         var="libro" 
+                                         rowKey="#{libro.id}"
+                                         styleClass="tabla-libros-expansion"
+                                         emptyMessage="No hay libros registrados.">
+
+                                <p:column style="width: 2rem; text-align: center;">
+                                    <p:rowToggler />
+                                </p:column>
+
+                                <p:column headerText="Portada" width="100" style="text-align: center;">
+                                    <p:commandLink title="#{libro.nomLibro}" onclick="PF('dlg#{libro.id}').show(); return false;">
+                                        <h:graphicImage library="portadas" name="#{libro.portada}" height="60" 
+                                                        style="box-shadow: 2px 2px 5px rgba(0,0,0,0.2); border-radius: 4px;"/>
+                                    </p:commandLink>
+
+                                    <p:dialog widgetVar="dlg#{libro.id}" header="#{libro.nomLibro}" modal="true" resizable="false" closable="true" appendTo="@(body)">
+                                        <div style="text-align:center;">
+                                            <h:graphicImage library="portadas" name="#{libro.portada}" width="400"/>
+                                        </div>
+                                    </p:dialog>
+                                </p:column>
+
+                                <p:column headerText="Año" sortBy="#{libro.ano}" width="60" style="text-align: center;">
+                                    <h:outputText value="#{libro.ano}" style="font-weight: bold;" />
+                                </p:column>
+
+                                <p:column headerText="Título" sortBy="#{libro.nomLibro}">
+                                    <h:outputText value="#{libro.nomLibro}" style="font-size: 1.1em;" />
+                                </p:column>
+
+                                <p:rowExpansion>
+                                    <div style="padding: 15px; background-color: #f4f4f4; margin: 5px; border-left: 4px solid #DAA520;">
+
+                                        <h:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10" style="width:100%">
+
+                                            <h:outputText value="Sinopsis:" style="font-weight: bold; color: #555;"/>
+                                            <h:outputText value="#{libro.comentario}" style="display:block; text-align: justify; font-style: italic; color: #444;"/>
+                                            
+                                        </h:panelGrid>
+                                    </div>
+                                </p:rowExpansion>
+
+                            </p:dataTable>
+                        </p:fieldset>
+                    </p:column>
+
+                </p:panelGrid>
+
                 <br />
-                <h:commandLink action="#{autorController.destroyAndView}" value="#{bundle.ViewAutorDestroyLink}"/>
-                <br />
-                <br />
-                <h:link outcome="Edit" value="#{bundle.ViewAutorEditLink}"/>
-                <br />
-                <h:commandLink action="#{autorController.prepareCreate}" value="#{bundle.ViewAutorCreateLink}" />
-                <br />
-                <h:commandLink action="#{autorController.prepareList}" value="#{bundle.ViewAutorShowAllLink}"/>
-                <br />
-                <br />
-                <h:link outcome="/index" value="#{bundle.ViewAutorIndexLink}"/>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <p:commandButton action="#{autorController.destroyAndView}" value="#{bundle.ViewAutorDestroyLink}" icon="pi pi-trash" styleClass="ui-button-danger" style="margin-right: 10px;"/>
+                    <p:button outcome="Edit" value="#{bundle.ViewAutorEditLink}" icon="pi pi-pencil" style="margin-right: 10px;"/>
+                    <p:commandButton action="#{autorController.prepareCreate}" value="#{bundle.ViewAutorCreateLink}" icon="pi pi-plus" styleClass="ui-button-success" style="margin-right: 10px;"/>
+                    <p:commandButton action="#{autorController.prepareList}" value="#{bundle.ViewAutorShowAllLink}" icon="pi pi-list" styleClass="ui-button-secondary"/>
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <h:link outcome="/index" value="#{bundle.ViewAutorIndexLink}"/>
+                </div>
 
             </h:form>
         </ui:define>
